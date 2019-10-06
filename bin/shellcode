@@ -1,0 +1,4 @@
+from pwnlib.utils.misc import shellcode
+import sys
+
+sys.stdout.buffer.write(shellcode[sys.argv[1]][sys.argv[2]][sys.argv[3]])
