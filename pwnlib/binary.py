@@ -37,3 +37,32 @@ class ELF(object):
 
 	def search(self, pattern):
 		return iter([i["offset"] for i in self.r2.cmdj("/j {}".format(pattern))])
+
+	def ret2csu_gadgets(self):
+		ins = list(reversed(self.r2.cmdj("af@sym.__libc_csu_init; pdfj@sym.__libc_csu_init;")["ops"]))
+		assert(ins[0]["type"] == "ret")
+		tmp = [ins[0]]
+		for i in range(1, len(ins)):
+			if ins[i]["type"] != "pop":
+				break
+			tmp.insert(0, ins[i])
+		log.debug("ret2csu pops gadget", "\n".join(map(lambda x: "0x{:08x}: {}".format(x["offset"], x["disasm"]), tmp)))
+		while ins[i]["type"] != "ucall":
+			i += 1
+		tmp2 = [ins[i]]
+		while i < len(ins):
+			i += 1
+			if ins[i]["type"] != "mov":
+				break
+			tmp2.insert(0, ins[i])		
+		log.debug("ret2csu mov&call gadget", "\n".join(map(lambda x: "0x{:08x}: {}".format(x["offset"], x["disasm"]), tmp2)))
+		return tmp[0]["offset"], tmp2[0]["offset"]
+
+	def findgadgetbystr(self, s):
+		ins = s.split(";")[0]
+		opcodes = self.r2.cmdj("\"/Rj {}\"".format(s))[0]["opcodes"]
+		i = 0
+		while opcodes[i]["opcode"] != ins:
+			i += 1
+		return opcodes[i]["offset"]
+		
