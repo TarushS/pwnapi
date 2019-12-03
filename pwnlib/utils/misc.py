@@ -25,7 +25,7 @@ def hexdump(data):
 	if clear != "":
 		dump += " "*(56-len(dump.split("\n")[-1]))
 		dump += "│ "+clear
-	return "─"*56+"┬"+"─"*(term.columns-56-1)+"\n"+dump+"\n"+"─"*56+"┴"+"─"*(term.columns-56-1)
+	return "\u2500"*56+"\u252c"+"\u2500"*(term.columns-56-1)+"\n"+dump+"\n"+"\u2500"*56+"\u2534"+"\u2500"*(term.columns-56-1)
 
 def fit(data):
 	data = sorted(data.items(), key=lambda x: x[0])
