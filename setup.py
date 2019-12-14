@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name="pwnapi",
-      version="2019.10.6",
+      version="2019.12.14",
       author="nico",
       license="https://github.com/ndaprela/pwnapi/blob/master/LICENSE",
       url="https://github.com/ndaprela/pwnapi",
