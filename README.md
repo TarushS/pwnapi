@@ -8,7 +8,7 @@ Python 3 with `pip` and `radare2` are needed.
 
 If you don't have radare2, you can install it from git with:
 ```
-git clone https://github.com/radare/radare2 && cd radare2 && sys/install.sh
+git clone https://github.com/radareorg/radare2 && cd radare2 && sys/install.sh
 ```
 You can now install pwnapi with:
 ```
