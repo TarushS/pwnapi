@@ -15,6 +15,7 @@ class ELF(object):
 		self.path = path
 		self.r2 = r2pipe.open(path)
 		self.info = DotMap({i:self.r2.cmdj("ij")["bin"][i] for i in ELF.info})
+		self._base = 0
 
 		l = []
 		for m in ELF.info:
@@ -34,6 +35,31 @@ class ELF(object):
 
 		log.debug("GOT {} entries".format(len(self.sym.got)), "\n".join(["{:32}0x{:016x}".format(r[0], r[1]) for r in self.sym.got.items()]))
 		log.debug("PLT {} entries".format(len(self.sym.plt)), "\n".join(["{:32}0x{:016x}".format(r[0], r[1]) for r in self.sym.plt.items()]))
+
+	@property
+	def base(self):
+		return self._base
+
+	@base.setter
+	def base(self, value):
+		self._base = value
+		self.info = DotMap({i:self.r2.cmdj("ij")["bin"][i] for i in ELF.info})
+		self.r2.cmd("o {} {}".format(self.path, self._base))
+
+		l = []
+		for m in ELF.info:
+			l.append(m)
+			l.append(self.info[m])	
+
+		self.sym = DotMap()
+		
+		for i in self.r2.cmdj("isj"):
+			self.sym[i["name"]] = i["vaddr"]
+
+		self.sections = {i["name"]:i["vaddr"] for i in self.r2.cmdj("iSj")}
+		
+		self.sym.got = DotMap({i["name"]:i["vaddr"] for i in self.r2.cmdj("irj")})
+		self.sym.plt = DotMap({i["name"]:i["plt"]   for i in self.r2.cmdj("iij")})
 
 	def search(self, pattern):
 		return iter([i["offset"] for i in self.r2.cmdj("/j {}".format(pattern))])
