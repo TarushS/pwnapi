@@ -2,8 +2,8 @@ default:
 	echo -e "\n\nUSAGE: make [install|update]\n"
 
 install:
-	python -m pip install -r requirements.txt --user
-	python -m pip install -e . --user
+	python3 -m pip install -r requirements.txt --user
+	python3 -m pip install -e . --user
 
 sync:
 	git pull origin master
